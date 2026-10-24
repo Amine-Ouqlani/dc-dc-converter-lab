@@ -1,0 +1,11 @@
+{
+  "name": "dc-dc-converter-lab",
+  "version": "1.0.0",
+  "description": "Interactive buck and boost converter simulator: switching waveforms, CCM/DCM, losses, efficiency and a voltage loop, checked against the textbook formulas.",
+  "scripts": {
+    "test": "node tests/run-tests.js"
+  },
+  "author": "Ahmed Amine Ouqlani",
+  "license": "MIT",
+  "private": true
+}

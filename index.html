@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>DC-DC Converter Lab</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Interactive buck and boost converter simulator, in English and French: switching waveforms on an oscilloscope, continuous and discontinuous conduction, losses and efficiency, and a voltage control loop, compared with the textbook formulas.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <h1 data-i18n="app.title">DC-DC Converter Lab</h1>
+        <p class="lede" data-i18n="app.lede"></p>
+      </div>
+      <div class="top-side">
+        <div class="lang-switch" role="group" data-i18n-aria="lang.group">
+          <button type="button" class="lang-btn" data-set-lang="fr" title="Afficher en français" aria-label="Afficher en français">
+            <svg viewBox="0 0 3 2" aria-hidden="true" focusable="false"><rect width="1" height="2" fill="#002395"/><rect x="1" width="1" height="2" fill="#fff"/><rect x="2" width="1" height="2" fill="#ED2939"/></svg>
+            <span>FR</span>
+          </button>
+          <button type="button" class="lang-btn" data-set-lang="en" title="Show in English" aria-label="Show in English">
+            <svg viewBox="0 0 190 100" aria-hidden="true" focusable="false"><rect width="190" height="100" fill="#fff"/><g fill="#B22234"><rect y="0" width="190" height="7.69"/><rect y="15.38" width="190" height="7.69"/><rect y="30.77" width="190" height="7.69"/><rect y="46.15" width="190" height="7.69"/><rect y="61.54" width="190" height="7.69"/><rect y="76.92" width="190" height="7.69"/><rect y="92.31" width="190" height="7.69"/></g><rect width="76" height="53.85" fill="#3C3B6E"/><g fill="#fff"><circle cx="6.3" cy="5.4" r="1.9"/><circle cx="19" cy="5.4" r="1.9"/><circle cx="31.7" cy="5.4" r="1.9"/><circle cx="44.3" cy="5.4" r="1.9"/><circle cx="57" cy="5.4" r="1.9"/><circle cx="69.7" cy="5.4" r="1.9"/><circle cx="12.7" cy="10.8" r="1.9"/><circle cx="25.3" cy="10.8" r="1.9"/><circle cx="38" cy="10.8" r="1.9"/><circle cx="50.7" cy="10.8" r="1.9"/><circle cx="63.3" cy="10.8" r="1.9"/><circle cx="6.3" cy="16.2" r="1.9"/><circle cx="19" cy="16.2" r="1.9"/><circle cx="31.7" cy="16.2" r="1.9"/><circle cx="44.3" cy="16.2" r="1.9"/><circle cx="57" cy="16.2" r="1.9"/><circle cx="69.7" cy="16.2" r="1.9"/><circle cx="12.7" cy="21.5" r="1.9"/><circle cx="25.3" cy="21.5" r="1.9"/><circle cx="38" cy="21.5" r="1.9"/><circle cx="50.7" cy="21.5" r="1.9"/><circle cx="63.3" cy="21.5" r="1.9"/><circle cx="6.3" cy="26.9" r="1.9"/><circle cx="19" cy="26.9" r="1.9"/><circle cx="31.7" cy="26.9" r="1.9"/><circle cx="44.3" cy="26.9" r="1.9"/><circle cx="57" cy="26.9" r="1.9"/><circle cx="69.7" cy="26.9" r="1.9"/><circle cx="12.7" cy="32.3" r="1.9"/><circle cx="25.3" cy="32.3" r="1.9"/><circle cx="38" cy="32.3" r="1.9"/><circle cx="50.7" cy="32.3" r="1.9"/><circle cx="63.3" cy="32.3" r="1.9"/><circle cx="6.3" cy="37.7" r="1.9"/><circle cx="19" cy="37.7" r="1.9"/><circle cx="31.7" cy="37.7" r="1.9"/><circle cx="44.3" cy="37.7" r="1.9"/><circle cx="57" cy="37.7" r="1.9"/><circle cx="69.7" cy="37.7" r="1.9"/><circle cx="12.7" cy="43.1" r="1.9"/><circle cx="25.3" cy="43.1" r="1.9"/><circle cx="38" cy="43.1" r="1.9"/><circle cx="50.7" cy="43.1" r="1.9"/><circle cx="63.3" cy="43.1" r="1.9"/><circle cx="6.3" cy="48.5" r="1.9"/><circle cx="19" cy="48.5" r="1.9"/><circle cx="31.7" cy="48.5" r="1.9"/><circle cx="44.3" cy="48.5" r="1.9"/><circle cx="57" cy="48.5" r="1.9"/><circle cx="69.7" cy="48.5" r="1.9"/></g></svg>
+            <span>EN</span>
+          </button>
+        </div>
+        <p class="byline">Ahmed Amine Ouqlani · ENSEEIHT 3EA ·
+          <a href="https://github.com/amine-ouqlani/dc-dc-converter-lab" target="_blank" rel="noopener noreferrer" data-i18n="app.source">Source on GitHub</a></p>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <section class="live">
+
+      <!-- ============ schematic + oscilloscopes ============ -->
+      <div class="stage">
+
+        <div class="card schematic-card">
+          <div class="card-head">
+            <div class="seg" role="group" data-i18n-aria="topo.aria">
+              <button type="button" data-topo="buck" class="on" data-i18n="topo.buck">Buck</button>
+              <button type="button" data-topo="boost" data-i18n="topo.boost">Boost</button>
+            </div>
+            <div class="status">
+              <span class="chip" id="chip-mode">CCM</span>
+              <span class="chip chip-switch" id="chip-switch"></span>
+            </div>
+          </div>
+          <canvas id="schematic" data-i18n-aria="schem.aria"></canvas>
+        </div>
+
+        <figure class="scope">
+          <figcaption class="scope-head">
+            <span class="scope-title" data-i18n="scope.sw">Switching waveforms</span>
+            <span class="scope-tb" id="tb-sw"></span>
+          </figcaption>
+          <canvas id="scope-sw" data-i18n-aria="scope.sw.aria"></canvas>
+          <div class="scope-chans" id="chans-sw"></div>
+        </figure>
+
+        <figure class="scope">
+          <figcaption class="scope-head">
+            <span class="scope-title" data-i18n="scope.tr">Transient</span>
+            <span class="scope-tb" id="tb-tr"></span>
+          </figcaption>
+          <canvas id="scope-tr" data-i18n-aria="scope.tr.aria"></canvas>
+          <div class="scope-chans" id="chans-tr"></div>
+        </figure>
+
+        <div class="transport">
+          <button type="button" class="btn" id="play">Pause</button>
+          <button type="button" class="btn" id="startup" data-i18n="btn.startup">Start from 0 V</button>
+          <span class="speed-label" data-i18n="speed.label">Periods per second</span>
+          <div class="seg" role="group" data-i18n-aria="speed.aria">
+            <button type="button" data-speed="2">2</button>
+            <button type="button" data-speed="20">20</button>
+            <button type="button" data-speed="200" class="on">200</button>
+            <button type="button" data-speed="2000">2000</button>
+          </div>
+          <span class="speed-note" id="speed-note"></span>
+        </div>
+      </div>
+
+      <!-- ============ controls ============ -->
+      <div class="panel">
+
+        <section class="group">
+          <h2 data-i18n="g.presets">Try this</h2>
+          <div class="presets" id="presets"></div>
+          <p class="note" id="preset-note"></p>
+        </section>
+
+        <section class="group">
+          <h2 data-i18n="g.source">Source and load</h2>
+          <div class="field">
+            <label for="vin"><span data-i18n="f.vin">Input voltage V<sub>in</sub></span> <output id="vin-out" for="vin"></output></label>
+            <input type="range" id="vin" min="3" max="36" step="0.5">
+          </div>
+          <div class="field">
+            <label for="R"><span data-i18n="f.R">Load resistance R</span> <output id="R-out" for="R"></output></label>
+            <input type="range" id="R" min="0" max="1000" step="1">
+          </div>
+          <div class="row">
+            <button type="button" class="btn btn-small" id="load-step" data-i18n="btn.loadstep">Load step: current × 2</button>
+            <button type="button" class="btn btn-small" id="vin-step" data-i18n="btn.vinstep">Input step: V<sub>in</sub> + 25 %</button>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 data-i18n="g.control">Control</h2>
+          <div class="seg seg-wide" role="group" data-i18n-aria="ctrl.aria">
+            <button type="button" data-ctrl="open" class="on" data-i18n="ctrl.open">Open loop</button>
+            <button type="button" data-ctrl="closed" data-i18n="ctrl.closed">Voltage loop</button>
+          </div>
+          <div id="open-fields">
+            <div class="field">
+              <label for="d"><span data-i18n="f.d">Duty cycle D</span> <output id="d-out" for="d"></output></label>
+              <input type="range" id="d" min="0.05" max="0.9" step="0.005">
+            </div>
+          </div>
+          <div id="closed-fields" hidden>
+            <div class="field">
+              <label for="vref"><span data-i18n="f.vref">Target V<sub>ref</sub></span> <output id="vref-out" for="vref"></output></label>
+              <input type="range" id="vref" min="1" max="48" step="0.1">
+            </div>
+            <div class="field">
+              <label for="speed"><span data-i18n="f.loop">Loop speed</span> <output id="speed-out" for="speed"></output></label>
+              <input type="range" id="speed" min="0" max="1000" step="1">
+            </div>
+            <p class="note" id="loop-note"></p>
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 data-i18n="g.switching">Switching and components</h2>
+          <div class="field">
+            <label for="fs"><span data-i18n="f.fs">Switching frequency f<sub>s</sub></span> <output id="fs-out" for="fs"></output></label>
+            <input type="range" id="fs" min="0" max="1000" step="1">
+          </div>
+          <div class="field">
+            <label for="L"><span data-i18n="f.L">Inductance L</span> <output id="L-out" for="L"></output></label>
+            <input type="range" id="L" min="0" max="1000" step="1">
+          </div>
+          <div class="field">
+            <label for="C"><span data-i18n="f.C">Capacitance C</span> <output id="C-out" for="C"></output></label>
+            <input type="range" id="C" min="0" max="1000" step="1">
+          </div>
+        </section>
+
+        <section class="group">
+          <h2 data-i18n="g.losses">Real components</h2>
+          <div class="field">
+            <label for="ron"><span data-i18n="f.ron">Switch resistance R<sub>on</sub></span> <output id="ron-out" for="ron"></output></label>
+            <input type="range" id="ron" min="0" max="0.5" step="0.005">
+          </div>
+          <div class="field">
+            <label for="rl"><span data-i18n="f.rl">Inductor resistance r<sub>L</sub></span> <output id="rl-out" for="rl"></output></label>
+            <input type="range" id="rl" min="0" max="0.5" step="0.005">
+          </div>
+          <div class="field">
+            <label for="vf"><span data-i18n="f.vf">Diode drop V<sub>F</sub></span> <output id="vf-out" for="vf"></output></label>
+            <input type="range" id="vf" min="0" max="1" step="0.01">
+          </div>
+          <div class="field">
+            <label for="tsw"><span data-i18n="f.tsw">Switching time t<sub>sw</sub></span> <output id="tsw-out" for="tsw"></output></label>
+            <input type="range" id="tsw" min="0" max="200" step="1">
+          </div>
+          <button type="button" class="btn btn-small" id="ideal" data-i18n="btn.ideal">Make components ideal</button>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ============ theory vs simulation ============ -->
+    <section class="analysis" aria-labelledby="an-title">
+      <div class="analysis-head">
+        <h2 id="an-title" data-i18n="an.title">Theory vs simulation</h2>
+        <span class="note" data-i18n="an.note">Steady state of the current settings, recomputed when you change them.</span>
+      </div>
+
+      <div class="an-grid">
+        <div class="table-wrap">
+          <table class="cmp" id="cmp">
+            <thead>
+              <tr>
+                <th data-i18n="t.qty">Quantity</th>
+                <th data-i18n="t.ideal">Ideal formula</th>
+                <th data-i18n="t.real">With losses</th>
+                <th data-i18n="t.sim">Simulated</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <p class="note formulas" id="formulas"></p>
+        </div>
+
+        <figure class="plot">
+          <figcaption><span data-i18n="p.loss">Where the power goes</span> <span class="sub" id="eff-sub"></span></figcaption>
+          <canvas id="losses" data-i18n-aria="p.loss.aria"></canvas>
+        </figure>
+
+        <figure class="plot plot-wide">
+          <figcaption><span data-i18n="p.char">Static characteristic</span> <span class="sub" data-i18n="p.char.sub">V<sub>out</sub> / V<sub>in</sub> as a function of D</span></figcaption>
+          <canvas id="char" data-i18n-aria="p.char.aria"></canvas>
+          <ul class="legend" id="char-legend"></ul>
+        </figure>
+      </div>
+    </section>
+
+    <section class="about">
+      <h2 data-i18n="about.title">The model</h2>
+      <div class="about-grid">
+        <div>
+          <h3 data-i18n="about.sim">Simulation</h3>
+          <p data-i18n="about.sim.p1"></p>
+          <p class="eq" id="eq-model"></p>
+          <p data-i18n="about.sim.p2"></p>
+        </div>
+        <div>
+          <h3 data-i18n="about.loss">Losses</h3>
+          <p data-i18n="about.loss.p1"></p>
+          <p data-i18n="about.loss.p2"></p>
+        </div>
+        <div>
+          <h3 data-i18n="about.ctrl">Voltage loop</h3>
+          <p data-i18n="about.ctrl.p1"></p>
+          <p data-i18n="about.ctrl.p2"></p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <p data-i18n="foot">DC-DC Converter Lab · Ahmed Amine Ouqlani · MIT License</p>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/converter.js"></script>
+  <script src="js/presets.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
